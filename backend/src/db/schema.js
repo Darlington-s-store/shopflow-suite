@@ -322,6 +322,49 @@ const initializeDatabase = async () => {
       );
     `);
 
+    // Chatbot messages table
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS chatbot_messages (
+        id SERIAL PRIMARY KEY,
+        user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+        message TEXT NOT NULL,
+        message_type VARCHAR(50),
+        ai_response_type VARCHAR(50),
+        image_url TEXT,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
+    `);
+
+    // Admin notifications table
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS admin_notifications (
+        id SERIAL PRIMARY KEY,
+        title VARCHAR(255) NOT NULL,
+        message TEXT NOT NULL,
+        type VARCHAR(50),
+        data JSONB,
+        is_read BOOLEAN DEFAULT false,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
+    `);
+
+    // Deals table
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS deals (
+        id SERIAL PRIMARY KEY,
+        product_id INTEGER REFERENCES products(id) ON DELETE CASCADE,
+        title VARCHAR(255) NOT NULL,
+        description TEXT,
+        discount_percentage DECIMAL(5, 2),
+        start_date TIMESTAMP,
+        end_date TIMESTAMP,
+        is_active BOOLEAN DEFAULT true,
+        featured BOOLEAN DEFAULT false,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
+    `);
+
     // Create indexes for better query performance
     await pool.query(`CREATE INDEX IF NOT EXISTS idx_products_category ON products(category_id);`);
     await pool.query(`CREATE INDEX IF NOT EXISTS idx_products_brand ON products(brand_id);`);
@@ -337,6 +380,10 @@ const initializeDatabase = async () => {
     await pool.query(`CREATE INDEX IF NOT EXISTS idx_notifications_user ON notifications(user_id);`);
     await pool.query(`CREATE INDEX IF NOT EXISTS idx_brand_models_brand ON brand_models(brand_id);`);
     await pool.query(`CREATE INDEX IF NOT EXISTS idx_brand_models_category ON brand_models(category_id);`);
+    await pool.query(`CREATE INDEX IF NOT EXISTS idx_chatbot_user ON chatbot_messages(user_id);`);
+    await pool.query(`CREATE INDEX IF NOT EXISTS idx_admin_notifications_type ON admin_notifications(type);`);
+    await pool.query(`CREATE INDEX IF NOT EXISTS idx_deals_product ON deals(product_id);`);
+    await pool.query(`CREATE INDEX IF NOT EXISTS idx_deals_active ON deals(is_active);`);
 
     console.log('✅ Database schema initialized successfully');
   } catch (error) {

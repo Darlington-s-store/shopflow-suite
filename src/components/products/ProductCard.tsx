@@ -83,7 +83,7 @@ export function ProductCard({ product, variant = 'default' }: ProductCardProps) 
         "group overflow-hidden card-hover border-0 shadow-soft transition-all duration-300 hover:shadow-medium",
         variant === 'compact' && "shadow-none border"
       )}>
-        <div className="relative aspect-product bg-muted overflow-hidden rounded-lg">
+        <div className="relative aspect-square bg-muted overflow-hidden rounded-lg max-h-56">
           {/* Product Image with overlay */}
           <div className="relative w-full h-full bg-gradient-to-b from-transparent to-black/5">
             <img
@@ -134,7 +134,7 @@ export function ProductCard({ product, variant = 'default' }: ProductCardProps) 
           </div>
         </div>
 
-        <CardContent className={cn("p-3 md:p-4", variant === 'compact' && "p-2")}>
+        <CardContent className={cn("p-2.5 md:p-3", variant === 'compact' && "p-2")}>
           {/* Brand */}
           {product.brandId && (
             <p className="text-xs text-accent font-bold mb-1 uppercase tracking-widest">
@@ -144,34 +144,34 @@ export function ProductCard({ product, variant = 'default' }: ProductCardProps) 
 
           {/* Name */}
           <h3 className={cn(
-            "font-bold line-clamp-2 group-hover:text-accent transition-colors duration-200",
-            variant === 'compact' ? "text-xs" : "text-sm md:text-base"
+            "font-semibold line-clamp-2 group-hover:text-accent transition-colors duration-200 text-xs md:text-sm",
+            variant === 'compact' && "text-xs"
           )}>
             {product.name}
           </h3>
 
           {/* Rating */}
-          <div className="flex items-center gap-1 mt-2">
+          <div className="flex items-center gap-0.5 mt-1">
             <div className="flex gap-0.5">
               {[...Array(5)].map((_, i) => (
                 <Star 
                   key={i}
                   className={cn(
-                    "h-3.5 w-3.5",
+                    "h-3 w-3",
                     i < 4 ? "fill-accent text-accent" : "text-muted-foreground"
                   )}
                 />
               ))}
             </div>
-            <span className="text-xs font-medium text-muted-foreground">(12)</span>
+            <span className="text-xs text-muted-foreground">(5)</span>
           </div>
 
           {/* Price Section */}
-          <div className="mt-2 space-y-1">
-            <div className="flex items-baseline gap-2">
+          <div className="mt-1.5 space-y-1">
+            <div className="flex items-baseline gap-1.5">
               <span className={cn(
-                "font-bold text-accent text-lg",
-                variant === 'compact' ? "text-base" : "text-lg"
+                "font-bold text-accent",
+                variant === 'compact' ? "text-xs" : "text-sm md:text-base"
               )}>
                 {formatCurrency(lowestPrice)}
               </span>
@@ -184,18 +184,18 @@ export function ProductCard({ product, variant = 'default' }: ProductCardProps) 
 
             {/* Variants indicator */}
             {activeVariants.length > 1 && (
-              <p className="text-xs text-muted-foreground font-medium">
-                {activeVariants.length} options
+              <p className="text-xs text-muted-foreground">
+                +{activeVariants.length - 1} colors
               </p>
             )}
           </div>
 
           {/* Stock status indicator */}
           {activeVariants.length > 0 && (
-            <div className="mt-3 pt-3 border-t border-border/50">
-              <div className="flex items-center gap-2">
-                <div className="h-2 w-2 rounded-full bg-green-500" />
-                <span className="text-xs font-medium text-green-700">In Stock</span>
+            <div className="mt-1.5 pt-1.5 border-t border-border/50">
+              <div className="flex items-center gap-1">
+                <div className="h-1.5 w-1.5 rounded-full bg-green-500" />
+                <span className="text-xs text-green-700">In stock</span>
               </div>
             </div>
           )}

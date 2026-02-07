@@ -17,6 +17,8 @@ import couponRoutes from './routes/coupon.js';
 import deliveryRoutes from './routes/delivery.js';
 import adminRoutes from './routes/admin.js';
 import notificationRoutes from './routes/notifications.js';
+import chatbotRoutes from './routes/chatbot.js';
+import dealsRoutes from './routes/deals.js';
 
 dotenv.config();
 
@@ -72,6 +74,8 @@ app.use('/api/coupons', couponRoutes);
 app.use('/api/deliveries', deliveryRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/notifications', notificationRoutes);
+app.use('/api/chatbot', chatbotRoutes);
+app.use('/api/deals', dealsRoutes);
 
 // Error handling middleware
 app.use((err, req, res, next) => {
