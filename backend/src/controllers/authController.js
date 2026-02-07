@@ -1,6 +1,7 @@
 import pool from '../db/pool.js';
 import crypto from 'crypto';
 import { hashPassword, comparePassword, generateToken, validateEmail, validatePasswordStrength } from '../utils/helpers.js';
+import { sendAccountVerificationSMS, sendPasswordResetSMS } from '../utils/smsService.js';
 
 export const register = async (req, res) => {
   try {
@@ -42,6 +43,12 @@ export const register = async (req, res) => {
       sameSite: 'lax',
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
+
+    // Send welcome SMS
+    if (phone) {
+      const verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
+      await sendAccountVerificationSMS(user.id, phone, verificationCode);
+    }
 
     res.status(201).json({
       success: true,
@@ -272,7 +279,7 @@ export const requestPasswordReset = async (req, res) => {
     const { email } = req.body;
     if (!email) return res.status(400).json({ success: false, error: 'Email required' });
 
-    const userRes = await pool.query('SELECT id, email FROM users WHERE email = $1', [email]);
+    const userRes = await pool.query('SELECT id, email, phone FROM users WHERE email = $1', [email]);
     if (userRes.rows.length === 0) {
       // Do not reveal whether email exists
       return res.json({ success: true, message: 'If that email exists, a reset link has been sent' });
@@ -289,9 +296,12 @@ export const requestPasswordReset = async (req, res) => {
     );
 
     const resetUrl = `${process.env.FRONTEND_URL || 'http://localhost:3000'}/reset-password?token=${token}&id=${user.id}`;
-
-    // TODO: send actual email via SMTP/provider. For now log to console
     console.log(`Password reset requested for ${user.email}: ${resetUrl}`);
+
+    // Send SMS if phone available
+    if (user.phone) {
+      await sendPasswordResetSMS(user.id, user.phone, token);
+    }
 
     res.json({ success: true, message: 'If that email exists, a reset link has been sent' });
   } catch (error) {

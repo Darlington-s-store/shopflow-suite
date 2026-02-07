@@ -280,6 +280,48 @@ const initializeDatabase = async () => {
       );
     `);
 
+    // SMS logs table for tracking SMS sent via Arkesel
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS sms_logs (
+        id SERIAL PRIMARY KEY,
+        user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+        phone_number VARCHAR(20) NOT NULL,
+        message TEXT NOT NULL,
+        type VARCHAR(50),
+        arkesel_response TEXT,
+        status VARCHAR(50) DEFAULT 'PENDING',
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
+    `);
+
+    // Messages table for admin to manage customer messages
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS messages (
+        id SERIAL PRIMARY KEY,
+        sender_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+        recipient_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+        subject VARCHAR(255),
+        message TEXT NOT NULL,
+        is_read BOOLEAN DEFAULT false,
+        message_type VARCHAR(50),
+        related_order_id INTEGER REFERENCES orders(id),
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
+    `);
+
+    // Brand variants table for storing brand models (e.g., Laptop brands with models)
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS brand_models (
+        id SERIAL PRIMARY KEY,
+        brand_id INTEGER NOT NULL REFERENCES brands(id) ON DELETE CASCADE,
+        category_id INTEGER NOT NULL REFERENCES categories(id) ON DELETE CASCADE,
+        model_name VARCHAR(255) NOT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        UNIQUE(brand_id, category_id, model_name)
+      );
+    `);
+
     // Create indexes for better query performance
     await pool.query(`CREATE INDEX IF NOT EXISTS idx_products_category ON products(category_id);`);
     await pool.query(`CREATE INDEX IF NOT EXISTS idx_products_brand ON products(brand_id);`);
@@ -289,6 +331,12 @@ const initializeDatabase = async () => {
     await pool.query(`CREATE INDEX IF NOT EXISTS idx_reviews_product ON reviews(product_id);`);
     await pool.query(`CREATE INDEX IF NOT EXISTS idx_reviews_user ON reviews(user_id);`);
     await pool.query(`CREATE INDEX IF NOT EXISTS idx_addresses_user ON addresses(user_id);`);
+    await pool.query(`CREATE INDEX IF NOT EXISTS idx_sms_logs_user ON sms_logs(user_id);`);
+    await pool.query(`CREATE INDEX IF NOT EXISTS idx_messages_sender ON messages(sender_id);`);
+    await pool.query(`CREATE INDEX IF NOT EXISTS idx_messages_recipient ON messages(recipient_id);`);
+    await pool.query(`CREATE INDEX IF NOT EXISTS idx_notifications_user ON notifications(user_id);`);
+    await pool.query(`CREATE INDEX IF NOT EXISTS idx_brand_models_brand ON brand_models(brand_id);`);
+    await pool.query(`CREATE INDEX IF NOT EXISTS idx_brand_models_category ON brand_models(category_id);`);
 
     console.log('✅ Database schema initialized successfully');
   } catch (error) {
