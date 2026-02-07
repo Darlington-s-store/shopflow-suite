@@ -342,6 +342,95 @@ export const deleteCategory = async (req, res) => {
 };
 
 // Brands
+// Product Variants Management
+export const getProductVariants = async (req, res) => {
+  try {
+    const { productId } = req.params;
+    const result = await pool.query(
+      'SELECT * FROM product_variants WHERE product_id = $1 ORDER BY created_at',
+      [productId]
+    );
+    res.json({ success: true, variants: result.rows });
+  } catch (error) {
+    console.error('Get variants error:', error);
+    res.status(500).json({ success: false, error: 'Failed to fetch variants' });
+  }
+};
+
+export const createProductVariant = async (req, res) => {
+  try {
+    const { productId } = req.params;
+    const { sku, color, storage, price, stock } = req.body;
+
+    // Verify product exists
+    const productCheck = await pool.query('SELECT id FROM products WHERE id = $1', [productId]);
+    if (productCheck.rows.length === 0) {
+      return res.status(404).json({ success: false, error: 'Product not found' });
+    }
+
+    const result = await pool.query(
+      `INSERT INTO product_variants (product_id, sku, color, storage, price, stock, status)
+       VALUES ($1, $2, $3, $4, $5, $6, $7)
+       RETURNING *`,
+      [productId, sku || `${productId}-${Date.now()}`, color, storage, price, stock || 0, 'ACTIVE']
+    );
+
+    res.status(201).json({ success: true, variant: result.rows[0] });
+  } catch (error) {
+    console.error('Create variant error:', error);
+    res.status(500).json({ success: false, error: 'Failed to create variant' });
+  }
+};
+
+export const updateProductVariant = async (req, res) => {
+  try {
+    const { variantId } = req.params;
+    const { sku, color, storage, price, stock, status } = req.body;
+
+    const result = await pool.query(
+      `UPDATE product_variants 
+       SET sku = COALESCE($1, sku), color = COALESCE($2, color), storage = COALESCE($3, storage),
+           price = COALESCE($4, price), stock = COALESCE($5, stock), status = COALESCE($6, status),
+           updated_at = CURRENT_TIMESTAMP
+       WHERE id = $7
+       RETURNING *`,
+      [sku, color, storage, price, stock, status, variantId]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ success: false, error: 'Variant not found' });
+    }
+
+    res.json({ success: true, variant: result.rows[0] });
+  } catch (error) {
+    console.error('Update variant error:', error);
+    res.status(500).json({ success: false, error: 'Failed to update variant' });
+  }
+};
+
+export const deleteProductVariant = async (req, res) => {
+  try {
+    const { variantId } = req.params;
+    
+    // Check if variant is in any cart or order
+    const cartCheck = await pool.query('SELECT COUNT(*) FROM cart_items WHERE variant_id = $1', [variantId]);
+    if (parseInt(cartCheck.rows[0].count) > 0) {
+      return res.status(400).json({ success: false, error: 'Cannot delete variant with active cart items' });
+    }
+
+    const result = await pool.query('DELETE FROM product_variants WHERE id = $1 RETURNING id', [variantId]);
+    
+    if (result.rows.length === 0) {
+      return res.status(404).json({ success: false, error: 'Variant not found' });
+    }
+
+    res.json({ success: true, message: 'Variant deleted successfully' });
+  } catch (error) {
+    console.error('Delete variant error:', error);
+    res.status(500).json({ success: false, error: 'Failed to delete variant' });
+  }
+};
+
 export const getAllBrands = async (req, res) => {
   try {
     const result = await pool.query('SELECT * FROM brands WHERE status = $1 ORDER BY name', ['ACTIVE']);

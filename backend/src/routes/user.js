@@ -13,6 +13,7 @@ import {
   deleteAddress
 } from '../controllers/userController.js';
 import { getOrders } from '../controllers/orderController.js';
+import { sendMessage, getUserMessages, getMessageThread, markMessageAsRead, deleteMessage } from '../controllers/messageController.js';
 import { authMiddleware } from '../middleware/auth.js';
 
 const router = express.Router();
@@ -38,5 +39,12 @@ router.post('/addresses', addAddress);
 router.get('/addresses', getAddresses);
 router.put('/addresses/:id', updateAddress);
 router.delete('/addresses/:id', deleteAddress);
+
+// Message endpoints
+router.post('/messages', sendMessage);
+router.get('/messages', getUserMessages);
+router.get('/messages/:userId/thread', getMessageThread);
+router.put('/messages/:id/read', markMessageAsRead);
+router.delete('/messages/:id', deleteMessage);
 
 export default router;

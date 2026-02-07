@@ -12,7 +12,11 @@ import {
   getAllBrands,
   createBrand,
   updateBrand,
-  deleteBrand
+  deleteBrand,
+  getProductVariants,
+  createProductVariant,
+  updateProductVariant,
+  deleteProductVariant
 } from '../controllers/productController.js';
 import { authMiddleware, adminMiddleware } from '../middleware/auth.js';
 
@@ -22,15 +26,25 @@ const router = express.Router();
 router.get('/categories', getAllCategories);
 router.get('/brands', getAllBrands);
 router.get('/:id', getProductById);
+router.get('/:productId/variants', getProductVariants);
 router.get('/', getAllProducts);
 
 // Admin endpoints
 router.post('/', authMiddleware, adminMiddleware, createProduct);
 router.put('/:id', authMiddleware, adminMiddleware, updateProduct);
 router.delete('/:id', authMiddleware, adminMiddleware, deleteProduct);
+
+// Product variant endpoints (admin)
+router.post('/:productId/variants', authMiddleware, adminMiddleware, createProductVariant);
+router.put('/variants/:variantId', authMiddleware, adminMiddleware, updateProductVariant);
+router.delete('/variants/:variantId', authMiddleware, adminMiddleware, deleteProductVariant);
+
+// Category endpoints (admin)
 router.post('/categories', authMiddleware, adminMiddleware, createCategory);
 router.put('/categories/:id', authMiddleware, adminMiddleware, updateCategory);
 router.delete('/categories/:id', authMiddleware, adminMiddleware, deleteCategory);
+
+// Brand endpoints (admin)
 router.post('/brands', authMiddleware, adminMiddleware, createBrand);
 router.put('/brands/:id', authMiddleware, adminMiddleware, updateBrand);
 router.delete('/brands/:id', authMiddleware, adminMiddleware, deleteBrand);
