@@ -80,46 +80,51 @@ export function ProductCard({ product, variant = 'default' }: ProductCardProps) 
   return (
     <Link to={`/product/${product.slug}`}>
       <Card className={cn(
-        "group overflow-hidden card-hover border-0 shadow-soft",
+        "group overflow-hidden card-hover border-0 shadow-soft transition-all duration-300 hover:shadow-medium",
         variant === 'compact' && "shadow-none border"
       )}>
-        <div className="relative aspect-product bg-muted overflow-hidden">
-          <img
-            src={primaryImage?.url}
-            alt={product.name}
-            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-          />
-
-          {/* Badges */}
-          <div className="absolute top-3 left-3 flex flex-col gap-2">
-            {discount > 0 && (
-              <Badge variant="destructive" className="font-semibold">
-                -{discount}%
-              </Badge>
-            )}
-            {/* 'isFeatured' is missing from Product type, assuming false or could be added later */}
+        <div className="relative aspect-product bg-muted overflow-hidden rounded-lg">
+          {/* Product Image with overlay */}
+          <div className="relative w-full h-full bg-gradient-to-b from-transparent to-black/5">
+            <img
+              src={primaryImage?.url}
+              alt={product.name}
+              className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+            />
+            
+            {/* Gradient overlay */}
+            <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
           </div>
 
-          {/* Actions */}
-          <div className="absolute top-3 right-3 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+          {/* Top Badges */}
+          <div className="absolute top-3 left-3 flex flex-col gap-2">
+            {discount > 0 && (
+              <Badge className="font-bold text-white bg-accent hover:bg-accent/90 shadow-md">
+                <span>−{discount}%</span>
+              </Badge>
+            )}
+          </div>
+
+          {/* Wishlist Button - Always visible */}
+          <div className="absolute top-3 right-3 flex flex-col gap-2">
             <Button
               size="icon"
-              variant="secondary"
               className={cn(
-                "h-9 w-9 rounded-full shadow-md",
-                inWishlist && "bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                "h-10 w-10 rounded-full shadow-md transition-all duration-200",
+                inWishlist 
+                  ? "bg-accent text-white hover:bg-accent/90" 
+                  : "bg-white/90 text-accent hover:bg-white shadow-lg"
               )}
               onClick={handleWishlist}
             >
-              <Heart className={cn("h-4 w-4", inWishlist && "fill-current")} />
+              <Heart className={cn("h-5 w-5", inWishlist && "fill-current")} />
             </Button>
           </div>
 
-          {/* Quick add */}
-          <div className="absolute bottom-0 left-0 right-0 p-3 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
+          {/* Quick Add Button - Appears on hover */}
+          <div className="absolute bottom-0 left-0 right-0 p-3 bg-gradient-to-t from-black/70 via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 translate-y-2 group-hover:translate-y-0">
             <Button
-              variant="secondary"
-              className="w-full"
+              className="w-full bg-accent hover:bg-accent/90 text-white font-semibold shadow-lg"
               onClick={handleAddToCart}
               disabled={!defaultVariant}
             >
@@ -129,50 +134,70 @@ export function ProductCard({ product, variant = 'default' }: ProductCardProps) 
           </div>
         </div>
 
-        <CardContent className={cn("p-2 md:p-3", variant === 'compact' && "p-2")}>
+        <CardContent className={cn("p-3 md:p-4", variant === 'compact' && "p-2")}>
           {/* Brand */}
           {product.brandId && (
-            <p className="text-xs text-muted-foreground mb-1 uppercase tracking-wide">
-              {/* Fallback brand name logic since we only have ID here ideally would fetch name */}
-              Brand
+            <p className="text-xs text-accent font-bold mb-1 uppercase tracking-widest">
+              Featured
             </p>
           )}
 
           {/* Name */}
           <h3 className={cn(
-            "font-semibold line-clamp-2 group-hover:text-accent transition-colors",
-            variant === 'compact' ? "text-xs" : "text-sm"
+            "font-bold line-clamp-2 group-hover:text-accent transition-colors duration-200",
+            variant === 'compact' ? "text-xs" : "text-sm md:text-base"
           )}>
             {product.name}
           </h3>
 
-          {/* Rating - Placeholder */}
+          {/* Rating */}
           <div className="flex items-center gap-1 mt-2">
-            <Star className="h-4 w-4 fill-accent text-accent" />
-            <span className="text-sm font-medium">4.5</span>
-            <span className="text-sm text-muted-foreground">(0)</span>
+            <div className="flex gap-0.5">
+              {[...Array(5)].map((_, i) => (
+                <Star 
+                  key={i}
+                  className={cn(
+                    "h-3.5 w-3.5",
+                    i < 4 ? "fill-accent text-accent" : "text-muted-foreground"
+                  )}
+                />
+              ))}
+            </div>
+            <span className="text-xs font-medium text-muted-foreground">(12)</span>
           </div>
 
-          {/* Price */}
-          <div className="mt-1 flex items-baseline gap-2">
-            <span className={cn(
-              "font-bold",
-              variant === 'compact' ? "text-sm" : "text-base"
-            )}>
-              {formatCurrency(lowestPrice)}
-            </span>
-            {highestCompareAt > lowestPrice && (
-              <span className="text-sm text-muted-foreground line-through">
-                {formatCurrency(highestCompareAt)}
+          {/* Price Section */}
+          <div className="mt-2 space-y-1">
+            <div className="flex items-baseline gap-2">
+              <span className={cn(
+                "font-bold text-accent text-lg",
+                variant === 'compact' ? "text-base" : "text-lg"
+              )}>
+                {formatCurrency(lowestPrice)}
               </span>
+              {highestCompareAt > lowestPrice && (
+                <span className="text-xs text-muted-foreground line-through">
+                  {formatCurrency(highestCompareAt)}
+                </span>
+              )}
+            </div>
+
+            {/* Variants indicator */}
+            {activeVariants.length > 1 && (
+              <p className="text-xs text-muted-foreground font-medium">
+                {activeVariants.length} options
+              </p>
             )}
           </div>
 
-          {/* Variants indicator */}
-          {activeVariants.length > 1 && (
-            <p className="text-xs text-muted-foreground mt-2">
-              {activeVariants.length} options available
-            </p>
+          {/* Stock status indicator */}
+          {activeVariants.length > 0 && (
+            <div className="mt-3 pt-3 border-t border-border/50">
+              <div className="flex items-center gap-2">
+                <div className="h-2 w-2 rounded-full bg-green-500" />
+                <span className="text-xs font-medium text-green-700">In Stock</span>
+              </div>
+            </div>
           )}
         </CardContent>
       </Card>

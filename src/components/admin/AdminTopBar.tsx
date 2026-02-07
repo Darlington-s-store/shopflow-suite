@@ -50,7 +50,7 @@ export function AdminTopBar({ onSidebarOpen }: AdminTopBarProps) {
     const markNotificationsRead = () => {
         const updated = notifications.map(n => ({ ...n, isRead: true }));
         setNotifications(updated);
-        localStorage.setItem('techmart_admin_notifications', JSON.stringify(updated));
+        // Backend API call would be made here to update notifications on server
     };
 
     return (

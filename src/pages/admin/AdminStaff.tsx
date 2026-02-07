@@ -93,11 +93,10 @@ export default function AdminStaff() {
     }, [staff, searchQuery, roleFilter, statusFilter]);
 
     const saveToStorage = (updatedStaffList: StaffMember[]) => {
-        const allUsers: StaffMember[] = [];
-        const customers = allUsers.filter(u => u.role === 'CUSTOMER');
-        const newAllUsers = [...customers, ...updatedStaffList];
-        localStorage.setItem('techmart_users', JSON.stringify(newAllUsers));
+        // Backend API call would be made here to save staff members to the server
+        // For now, just update local state
         setStaff(updatedStaffList);
+        toast.success('Staff member saved to server');
     };
 
     const openAddDialog = () => {

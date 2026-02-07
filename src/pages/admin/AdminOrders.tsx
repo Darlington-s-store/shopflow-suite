@@ -57,9 +57,7 @@ export default function AdminOrders() {
 
     const markNotificationsRead = () => {
         const updated = notifications.map(n => ({ ...n, isRead: true }));
-        localStorage.setItem('techmart_admin_notifications', JSON.stringify(updated));
-        // Force re-render not handled here without context, but local state update would be better.
-        // For now relying on re-mount or simple toggle.
+        // Backend API call would be made here to update notifications on server
     };
 
     // Get riders

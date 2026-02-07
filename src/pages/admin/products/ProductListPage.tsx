@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Plus, Search, Filter, MoreVertical, Edit2, Trash2, Eye, Copy } from 'lucide-react';
+import { Plus, Search, Filter, MoreVertical, Edit2, Trash2, Eye, Copy, Image as ImageIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -262,6 +262,10 @@ export default function ProductListPage() {
                                                             <DropdownMenuItem onClick={() => navigate(`/admin/products/edit/${product.id}`)}>
                                                                 <Edit2 className="h-4 w-4 mr-2" />
                                                                 Edit
+                                                            </DropdownMenuItem>
+                                                            <DropdownMenuItem onClick={() => navigate(`/admin/products/${product.id}/images`)}>
+                                                                <ImageIcon className="h-4 w-4 mr-2" />
+                                                                Manage Images
                                                             </DropdownMenuItem>
                                                             <DropdownMenuItem onClick={() => navigate(`/products/${product.slug}`)}>
                                                                 <Eye className="h-4 w-4 mr-2" />

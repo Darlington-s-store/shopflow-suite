@@ -50,6 +50,7 @@ import AdminStaff from "./pages/admin/AdminStaff";
 import AdminCoupons from "./pages/admin/AdminCoupons";
 import AddProduct from "./pages/admin/products/AddProduct";
 import EditProduct from "./pages/admin/products/EditProduct";
+import ProductImageManagement from "./pages/admin/products/ProductImageManagement";
 import CustomerDetailsPage from "./pages/admin/customers/CustomerDetailsPage";
 import CategoryFormPage from "./pages/admin/categories/CategoryFormPage";
 import SubCategoriesPage from "./pages/admin/categories/SubCategoriesPage";
@@ -171,6 +172,7 @@ function AppRoutes() {
         <Route path="products" element={<AdminProducts />} />
         <Route path="products/add" element={<AddProduct />} />
         <Route path="products/edit/:productId" element={<EditProduct />} />
+        <Route path="products/:productId/images" element={<ProductImageManagement />} />
         <Route path="categories" element={<AdminCategoriesPage />} />
         <Route path="categories/add" element={<CategoryFormPage />} />
         <Route path="categories/edit/:categoryId" element={<CategoryFormPage />} />

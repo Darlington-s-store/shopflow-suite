@@ -180,26 +180,35 @@ const Index = () => {
       </section>
 
       {/* Featured Products */}
-      <section className="py-12 md:py-16 bg-muted/50">
+      <section className="py-16 md:py-20 bg-gradient-to-b from-background to-muted/30">
         <div className="container">
-          <div className="flex items-center justify-between mb-8">
+          <div className="flex items-center justify-between mb-10">
             <div>
-              <h2 className="text-2xl md:text-3xl font-bold">Featured Products</h2>
-              <p className="text-muted-foreground mt-1">Hand-picked just for you</p>
+              <h2 className="text-3xl md:text-4xl font-bold">Featured Products</h2>
+              <p className="text-muted-foreground mt-2 text-lg">Handpicked selections just for you</p>
             </div>
-            <Button variant="ghost" asChild>
+            <Button variant="outline" size="lg" asChild className="hidden md:inline-flex border-primary text-primary hover:bg-primary/5">
               <Link to="/products">
-                View All
+                View All Products
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Link>
             </Button>
           </div>
 
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2 sm:gap-3 md:gap-3 lg:gap-4">
-            {featuredProducts.map((product) => (
-              <ProductCard key={product.id} product={product} />
-            ))}
-          </div>
+          {featuredProducts.length > 0 ? (
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4 lg:gap-5">
+              {featuredProducts.map((product) => (
+                <ProductCard key={product.id} product={product} />
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-12 bg-muted/50 rounded-lg">
+              <p className="text-muted-foreground text-lg">No featured products available yet</p>
+              <Button variant="outline" size="lg" asChild className="mt-4">
+                <Link to="/products">Browse All Products</Link>
+              </Button>
+            </div>
+          )}
         </div>
       </section>
 
@@ -238,26 +247,33 @@ const Index = () => {
       </section>
 
       {/* All Products */}
-      <section className="py-12 md:py-16">
+      <section className="py-16 md:py-20 bg-background">
         <div className="container">
-          <div className="flex items-center justify-between mb-8">
+          <div className="flex items-center justify-between mb-10">
             <div>
-              <h2 className="text-2xl md:text-3xl font-bold">Explore Our Products</h2>
-              <p className="text-muted-foreground mt-1">Discover what we have in store</p>
+              <h2 className="text-3xl md:text-4xl font-bold">Explore Our Collections</h2>
+              <p className="text-muted-foreground mt-2 text-lg">Discover our complete range of products</p>
             </div>
-            <Button variant="ghost" asChild>
+            <Button variant="outline" size="lg" asChild className="hidden md:inline-flex border-primary text-primary hover:bg-primary/5">
               <Link to="/products">
-                View All
+                Shop All
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Link>
             </Button>
           </div>
 
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2 sm:gap-3 md:gap-3 lg:gap-4">
-            {allProducts.map((product) => (
-              <ProductCard key={product.id} product={product} />
-            ))}
-          </div>
+          {allProducts.length > 0 ? (
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4 lg:gap-5">
+              {allProducts.map((product) => (
+                <ProductCard key={product.id} product={product} />
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-16 bg-muted/30 rounded-xl border border-border/50">
+              <p className="text-muted-foreground text-lg font-medium">No products available yet</p>
+              <p className="text-muted-foreground mt-2">Check back soon for exciting new products!</p>
+            </div>
+          )}
         </div>
       </section>
 

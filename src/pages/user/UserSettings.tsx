@@ -66,14 +66,14 @@ export default function UserSettings() {
     });
 
     useEffect(() => {
-        // Client localStorage removed; load defaults from server or use empty defaults
+        // Load defaults from server or use client-side defaults
         // TODO: replace with API call to fetch user settings
-        setSettings(null);
+        setSettings(settings);
     }, []);
 
     const saveSettings = (newSettings: Settings) => {
         setSettings(newSettings);
-        localStorage.setItem('shopflow_user_settings', JSON.stringify(newSettings));
+        // Backend API call would be made here to update user settings on server
         toast.success('Settings saved');
     };
 

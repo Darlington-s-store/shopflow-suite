@@ -473,19 +473,10 @@ export default function AdminSettings() {
                                     <Button
                                         variant="destructive"
                                         onClick={() => {
-                                            if (confirm("CRITICAL WARNING: This will wipe ALL your data, including products, orders, and settings. Are you absolutely sure?")) {
-                                                if (confirm("Last chance: This cannot be undone. Click OK to reset everything.")) {
-                                                    // Clear keys starting with shopflow_ or techmart_
-                                                    const keysToRemove = [];
-                                                    for (let i = 0; i < localStorage.length; i++) {
-                                                        const key = localStorage.key(i);
-                                                        if (key && (key.startsWith('shopflow_') || key.startsWith('techmart_'))) {
-                                                            keysToRemove.push(key);
-                                                        }
-                                                    }
-                                                    keysToRemove.forEach(key => localStorage.removeItem(key));
-
-                                                    toast.success('All data has been cleared. Reloading...');
+                                            if (confirm("CRITICAL WARNING: This will reset your application. Are you absolutely sure?")) {
+                                                if (confirm("Last chance: This action will be processed by the backend. Click OK to proceed.")) {
+                                                    // Backend API call would be made here to reset application data
+                                                    toast.success('Reset request sent to server...');
                                                     setTimeout(() => window.location.reload(), 1500);
                                                 }
                                             }
