@@ -86,9 +86,7 @@ export function Chatbot() {
     }
   };
 
-  if (!isAuthenticated) {
-    return null;
-  }
+  // Chatbot available for all users (authenticated and guests)
 
   if (isMinimized) {
     return (

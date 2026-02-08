@@ -61,6 +61,11 @@ import { AdminMessagesPage } from "./pages/admin/messages/AdminMessagesPage";
 import { AdminNotificationsPage } from "./pages/admin/notifications/AdminNotificationsPage";
 import { AdminChatbotPage } from "./pages/admin/chatbot/AdminChatbotPage";
 
+// Website Management Pages (creating simple placeholders for now)
+const AdminWebsiteContentPage = () => <div className="p-8"><h1 className="text-3xl font-bold">Website Content Management</h1><p className="mt-4 text-muted-foreground">Manage website content, settings, and configurations here.</p></div>;
+const AdminPagesPage = () => <div className="p-8"><h1 className="text-3xl font-bold">Pages & FAQs Management</h1><p className="mt-4 text-muted-foreground">Create and manage website pages, FAQs, and documentation.</p></div>;
+const AdminMediaPage = () => <div className="p-8"><h1 className="text-3xl font-bold">Media & Banners Management</h1><p className="mt-4 text-muted-foreground">Upload and manage product images, banners, and media files.</p></div>;
+
 // Rider Dashboard
 import RiderDashboard from "./pages/rider/RiderDashboard";
 
@@ -197,6 +202,9 @@ function AppRoutes() {
         <Route path="messages" element={<AdminMessagesPage />} />
         <Route path="notifications" element={<AdminNotificationsPage />} />
         <Route path="chatbot" element={<AdminChatbotPage />} />
+        <Route path="website-content" element={<AdminWebsiteContentPage />} />
+        <Route path="pages" element={<AdminPagesPage />} />
+        <Route path="media" element={<AdminMediaPage />} />
         <Route path="settings" element={<AdminSettings />} />
       </Route>
 

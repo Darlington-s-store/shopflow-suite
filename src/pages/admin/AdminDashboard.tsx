@@ -3,7 +3,7 @@ import {
     LayoutDashboard, Package, ShoppingCart, Users, BarChart3,
     Truck, Settings, LogOut, ChevronRight, Bell, Menu, X,
     Box, DollarSign, TrendingUp, Star, FolderTree, MessageSquare, CreditCard,
-    UserCog, Tag, Zap, MessageCircle, Megaphone, Lightbulb
+    UserCog, Tag, Zap, MessageCircle, Megaphone, Lightbulb, Globe, FileText, Image as ImageIcon
 } from 'lucide-react';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
@@ -30,6 +30,9 @@ const navigation = [
     { name: 'Chatbot', href: '/admin/chatbot', icon: Lightbulb },
     { name: 'Staff', href: '/admin/staff', icon: UserCog },
     { name: 'Analytics', href: '/admin/analytics', icon: BarChart3 },
+    { name: 'Website Content', href: '/admin/website-content', icon: Globe },
+    { name: 'Pages & FAQs', href: '/admin/pages', icon: FileText },
+    { name: 'Media & Banners', href: '/admin/media', icon: ImageIcon },
     { name: 'Settings', href: '/admin/settings', icon: Settings },
 ];
 

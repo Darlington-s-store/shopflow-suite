@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { ChevronRight, CreditCard, Building, Smartphone, Plus, Check, MapPin, Receipt, ShieldCheck } from 'lucide-react';
+import { ChevronRight, CreditCard, Building, Smartphone, Plus, Check, MapPin, Receipt, ShieldCheck, Truck } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -30,7 +30,7 @@ export default function CheckoutPage() {
   const [selectedAddressId, setSelectedAddressId] = useState<string>(
     addresses.find(a => a.isDefault)?.id || addresses[0]?.id || ''
   );
-  const [paymentMethod, setPaymentMethod] = useState<string>('card');
+  const [paymentMethod, setPaymentMethod] = useState<string>('cod');
   const [isProcessing, setIsProcessing] = useState(false);
   const [acceptedTerms, setAcceptedTerms] = useState(false);
   const [showAddAddress, setShowAddAddress] = useState(false);
@@ -152,6 +152,16 @@ export default function CheckoutPage() {
       // Trigger Paystack
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       initializePayment({ onSuccess: onSuccess as any, onClose });
+    } else if (paymentMethod === 'cod') {
+      // Cash on Delivery
+      try {
+        const order = await createOrder(selectedAddress, paymentMethod);
+        toast.success('Order placed successfully! Payment will be collected on delivery.');
+        navigate(`/order-confirmation/${order.id}`);
+      } catch (error) {
+        toast.error('Failed to place order');
+        setIsProcessing(false);
+      }
     } else {
       // Bank Transfer (Manual)
       try {
@@ -469,6 +479,20 @@ export default function CheckoutPage() {
                       <Label htmlFor="transfer" className="flex-1 cursor-pointer">
                         <span className="font-medium">Bank Transfer</span>
                         <p className="text-sm text-muted-foreground">Direct bank deposit</p>
+                      </Label>
+                    </div>
+                    <div
+                      className={cn(
+                        "flex items-center gap-3 p-4 rounded-lg border cursor-pointer bg-green-50/50 border-green-200",
+                        paymentMethod === 'cod' ? "border-accent bg-accent/5" : "border-green-200"
+                      )}
+                      onClick={() => !isProcessing && setPaymentMethod('cod')}
+                    >
+                      <RadioGroupItem value="cod" id="cod" />
+                      <Truck className="h-5 w-5 text-green-600" />
+                      <Label htmlFor="cod" className="flex-1 cursor-pointer">
+                        <span className="font-medium">Cash on Delivery (COD)</span>
+                        <p className="text-sm text-muted-foreground">Pay when your order arrives</p>
                       </Label>
                     </div>
                   </RadioGroup>
