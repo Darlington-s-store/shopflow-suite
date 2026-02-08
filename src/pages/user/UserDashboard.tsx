@@ -241,7 +241,7 @@ function DashboardOverview() {
                             <div>
                                 <p className="text-sm text-slate-500 mb-1">Total Spent</p>
                                 <p className="text-3xl font-bold text-slate-900">
-                                    GH₵{(totalSpent / 1000).toFixed(0)}K
+                                    GH₵{totalSpent >= 1000000 ? (totalSpent / 1000000).toFixed(1) + 'M' : totalSpent >= 1000 ? (totalSpent / 1000).toFixed(0) + 'K' : totalSpent.toFixed(0)}
                                 </p>
                                 <p className="text-xs text-slate-500 mt-1">
                                     This year

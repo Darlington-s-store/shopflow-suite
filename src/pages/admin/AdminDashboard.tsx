@@ -3,7 +3,7 @@ import {
     LayoutDashboard, Package, ShoppingCart, Users, BarChart3,
     Truck, Settings, LogOut, ChevronRight, Bell, Menu, X,
     Box, DollarSign, TrendingUp, Star, FolderTree, MessageSquare, CreditCard,
-    UserCog, Tag
+    UserCog, Tag, Zap, MessageCircle, Megaphone, Lightbulb
 } from 'lucide-react';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
@@ -19,13 +19,16 @@ const navigation = [
     { name: 'Products', href: '/admin/products', icon: Package },
     { name: 'Categories', href: '/admin/categories', icon: FolderTree },
     { name: 'Brands', href: '/admin/brands', icon: Tag },
+    { name: 'Deals', href: '/admin/deals', icon: Megaphone },
     { name: 'Orders', href: '/admin/orders', icon: ShoppingCart },
     { name: 'Customers', href: '/admin/customers', icon: Users },
-    { name: 'Reviews', href: '/admin/reviews', icon: MessageSquare },
+    { name: 'Reviews', href: '/admin/reviews', icon: Star },
     { name: 'Payments', href: '/admin/payments', icon: CreditCard },
     { name: 'Delivery', href: '/admin/delivery', icon: Truck },
+    { name: 'Messages', href: '/admin/messages', icon: MessageCircle },
+    { name: 'Notifications', href: '/admin/notifications', icon: Bell },
+    { name: 'Chatbot', href: '/admin/chatbot', icon: Lightbulb },
     { name: 'Staff', href: '/admin/staff', icon: UserCog },
-    { name: 'Coupons', href: '/admin/coupons', icon: Tag },
     { name: 'Analytics', href: '/admin/analytics', icon: BarChart3 },
     { name: 'Settings', href: '/admin/settings', icon: Settings },
 ];

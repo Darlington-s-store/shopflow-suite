@@ -56,6 +56,10 @@ import CategoryFormPage from "./pages/admin/categories/CategoryFormPage";
 import SubCategoriesPage from "./pages/admin/categories/SubCategoriesPage";
 import AdminBrandsPage from "./pages/admin/brands/AdminBrandsPage";
 import BrandFormPage from "./pages/admin/brands/BrandFormPage";
+import { AdminDealsPage } from "./pages/admin/deals/AdminDealsPage";
+import { AdminMessagesPage } from "./pages/admin/messages/AdminMessagesPage";
+import { AdminNotificationsPage } from "./pages/admin/notifications/AdminNotificationsPage";
+import { AdminChatbotPage } from "./pages/admin/chatbot/AdminChatbotPage";
 
 // Rider Dashboard
 import RiderDashboard from "./pages/rider/RiderDashboard";
@@ -180,6 +184,7 @@ function AppRoutes() {
         <Route path="brands" element={<AdminBrandsPage />} />
         <Route path="brands/add" element={<BrandFormPage />} />
         <Route path="brands/edit/:brandId" element={<BrandFormPage />} />
+        <Route path="deals" element={<AdminDealsPage />} />
         <Route path="orders" element={<AdminOrders />} />
         <Route path="customers" element={<AdminCustomers />} />
         <Route path="customers/:customerId" element={<CustomerDetailsPage />} />
@@ -189,6 +194,9 @@ function AppRoutes() {
         <Route path="payments" element={<AdminPayments />} />
         <Route path="staff" element={<AdminStaff />} />
         <Route path="coupons" element={<AdminCoupons />} />
+        <Route path="messages" element={<AdminMessagesPage />} />
+        <Route path="notifications" element={<AdminNotificationsPage />} />
+        <Route path="chatbot" element={<AdminChatbotPage />} />
         <Route path="settings" element={<AdminSettings />} />
       </Route>
 
