@@ -129,3 +129,26 @@ export const sendPasswordResetSMS = async (userId, phoneNumber, resetToken) => {
 export const sendPromotionalSMS = async (userId, phoneNumber, promoMessage) => {
   return sendAndLogSMS(userId, phoneNumber, promoMessage, 'promotion');
 };
+
+/**
+ * Send chatbot response SMS
+ */
+export const sendChatbotSMS = async (userId, phoneNumber, message) => {
+  return sendAndLogSMS(userId, phoneNumber, message, 'chatbot_response');
+};
+
+/**
+ * Send stock alert SMS
+ */
+export const sendStockAlertSMS = async (userId, phoneNumber, productName, quantity) => {
+  const message = `Stock Alert: "${productName}" is running low with only ${quantity} units remaining. Restock soon to avoid missing sales.`;
+  return sendAndLogSMS(userId, phoneNumber, message, 'stock_alert');
+};
+
+/**
+ * Send deal/promo SMS
+ */
+export const sendDealAlertSMS = async (userId, phoneNumber, dealTitle, discount) => {
+  const message = `Flash Sale Alert! ${dealTitle} - Get ${discount}% off now! Shop at ShopFlow before this deal ends.`;
+  return sendAndLogSMS(userId, phoneNumber, message, 'deal_alert');
+};

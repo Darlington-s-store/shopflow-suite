@@ -36,6 +36,27 @@ export const getFeaturedDeals = async (req, res) => {
   }
 };
 
+// Get flash sales (deals ending soon)
+export const getFlashSales = async (req, res) => {
+  try {
+    const result = await pool.query(
+      `SELECT d.*, p.name, p.images, p.base_price,
+              (EXTRACT(EPOCH FROM d.end_date - CURRENT_TIMESTAMP)/3600)::int as hours_remaining
+       FROM deals d
+       LEFT JOIN products p ON d.product_id = p.id
+       WHERE d.is_active = true AND CURRENT_TIMESTAMP BETWEEN d.start_date AND d.end_date
+       AND (EXTRACT(EPOCH FROM d.end_date - CURRENT_TIMESTAMP)/3600)::int < 24
+       ORDER BY d.end_date ASC
+       LIMIT 10`
+    );
+
+    res.json({ success: true, flashSales: result.rows });
+  } catch (error) {
+    console.error('Get flash sales error:', error);
+    res.status(500).json({ success: false, error: 'Failed to fetch flash sales' });
+  }
+};
+
 // Admin: Create deal
 export const createDeal = async (req, res) => {
   try {
@@ -136,6 +157,7 @@ export const getAllDeals = async (req, res) => {
 export default {
   getActiveDeals,
   getFeaturedDeals,
+  getFlashSales,
   createDeal,
   updateDeal,
   deleteDeal,

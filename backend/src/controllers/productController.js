@@ -30,6 +30,46 @@ const saveBase64Image = (base64String, filename) => {
   }
 };
 
+// Get category hierarchy with subcategories and brands
+export const getCategoryHierarchy = async (req, res) => {
+  try {
+    const mainCategories = await pool.query(
+      `SELECT * FROM categories WHERE parent_id IS NULL ORDER BY name`
+    );
+
+    const hierarchy = await Promise.all(mainCategories.rows.map(async (mainCat) => {
+      const subcategories = await pool.query(
+        `SELECT * FROM categories WHERE parent_id = $1 ORDER BY name`,
+        [mainCat.id]
+      );
+
+      return {
+        ...mainCat,
+        subcategories: subcategories.rows
+      };
+    }));
+
+    res.json({ success: true, categories: hierarchy });
+  } catch (error) {
+    console.error('Get category hierarchy error:', error);
+    res.status(500).json({ success: false, error: 'Failed to fetch categories' });
+  }
+};
+
+// Get all brands
+export const getAllBrands = async (req, res) => {
+  try {
+    const result = await pool.query(
+      `SELECT * FROM brands WHERE status = 'ACTIVE' ORDER BY name`
+    );
+
+    res.json({ success: true, brands: result.rows });
+  } catch (error) {
+    console.error('Get all brands error:', error);
+    res.status(500).json({ success: false, error: 'Failed to fetch brands' });
+  }
+};
+
 export const createProduct = async (req, res) => {
   try {
     const { name, categoryId, brandId, shortDescription, fullDescription, basePrice, discountPrice, taxEnabled, stockTracking, status, variants, images } = req.body;
@@ -91,46 +131,52 @@ export const createProduct = async (req, res) => {
 
 export const getAllProducts = async (req, res) => {
   try {
-    const { category, brand, search, page = 1, limit = 20 } = req.query;
-    let query = 'SELECT * FROM products WHERE status IN ($1, $2)';
+    const { category, subcategory, brand, search, page = 1, limit = 20 } = req.query;
+    let query = `SELECT p.*, c.name as category_name, c.parent_id, b.name as brand_name 
+                 FROM products p
+                 LEFT JOIN categories c ON p.category_id = c.id
+                 LEFT JOIN brands b ON p.brand_id = b.id
+                 WHERE p.status IN ($1, $2)`;
     let params = ['ACTIVE', 'PUBLISHED'];
     let paramIndex = 3;
 
     if (category) {
-      query += ` AND category_id = $${paramIndex}`;
-      params.push(category);
+      // If subcategory is provided, use it. Otherwise use category
+      if (subcategory) {
+        query += ` AND p.category_id = $${paramIndex}`;
+        params.push(subcategory);
+      } else {
+        // Get all products from category and its subcategories
+        query += ` AND (p.category_id = $${paramIndex} OR p.category_id IN (SELECT id FROM categories WHERE parent_id = $${paramIndex}))`;
+        params.push(category);
+        params.push(category);
+        paramIndex++;
+      }
       paramIndex++;
     }
 
     if (brand) {
-      query += ` AND brand_id = $${paramIndex}`;
+      query += ` AND p.brand_id = $${paramIndex}`;
       params.push(brand);
       paramIndex++;
     }
 
     if (search) {
-      query += ` AND (name ILIKE $${paramIndex} OR short_description ILIKE $${paramIndex})`;
+      query += ` AND (p.name ILIKE $${paramIndex} OR p.short_description ILIKE $${paramIndex})`;
       params.push(`%${search}%`);
       paramIndex++;
     }
 
-    const offset = (page - 1) * limit;
-    query += ` ORDER BY created_at DESC LIMIT $${paramIndex} OFFSET $${paramIndex + 1}`;
-    params.push(limit, offset);
+    query += ` ORDER BY p.created_at DESC LIMIT $${paramIndex} OFFSET $${paramIndex + 1}`;
+    params.push(limit, (page - 1) * limit);
 
     const result = await pool.query(query, params);
-
-    // Fetch images and variants for each product
-    const productsWithDetails = await Promise.all(
-      result.rows.map(async (product) => {
-        const imagesResult = await pool.query('SELECT * FROM product_images WHERE product_id = $1 ORDER BY sort_order', [product.id]);
-        const variantsResult = await pool.query('SELECT * FROM product_variants WHERE product_id = $1', [product.id]);
-        
-        return {
-          ...product,
-          images: imagesResult.rows,
-          variants: variantsResult.rows
-        };
+    res.json({ success: true, products: result.rows });
+  } catch (error) {
+    console.error('Get all products error:', error);
+    res.status(500).json({ success: false, error: 'Failed to fetch products' });
+  }
+};
       })
     );
 
