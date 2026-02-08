@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clear ShopFlow Data</title>
+    <style>
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #0f172a;
+            color: #e2e8f0;
+        }
+        .container {
+            background: #1e293b;
+            padding: 30px;
+            border-radius: 12px;
+            border: 1px solid #334155;
+        }
+        h1 {
+            color: #3b82f6;
+            margin-bottom: 10px;
+        }
+        .warning {
+            background: #7c2d12;
+            border: 1px solid #ea580c;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        .info {
+            background: #1e3a8a;
+            border: 1px solid #3b82f6;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        button {
+            background: #ef4444;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            margin-right: 10px;
+        }
+        button:hover {
+            background: #dc2626;
+        }
+        button.success {
+            background: #10b981;
+        }
+        button.success:hover {
+            background: #059669;
+        }
+        .data-list {
+            background: #0f172a;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            font-family: monospace;
+            font-size: 14px;
+        }
+        .data-item {
+            padding: 8px;
+            margin: 5px 0;
+            background: #1e293b;
+            border-radius: 4px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .count {
+            background: #3b82f6;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+        #result {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 8px;
+            display: none;
+        }
+        #result.success {
+            background: #064e3b;
+            border: 1px solid #10b981;
+            color: #6ee7b7;
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧹 Clear ShopFlow Data</h1>
+        <p>This tool will clear all hardcoded data from your browser's localStorage.</p>
+        
+        <div class="warning">
+            <strong>⚠️ Warning:</strong> This will permanently delete all stored data including payments, reviews, and coupons from your browser.
+        </div>
+
+        <div class="info">
+            <strong>📊 Current Data:</strong>
+            <div class="data-list" id="dataList">
+                <div class="data-item">
+                    <span>Checking localStorage...</span>
+                </div>
+            </div>
+        </div>
+
+        <div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center">
+            <button onclick="clearData()">Clear Matching Storage Keys</button>
+            <button onclick="clearIndexedDB()">Clear IndexedDB</button>
+            <button onclick="clearCachesAndWorkers()">Clear Caches & ServiceWorkers</button>
+            <button onclick="clearEverything()" class="success">Clear Everything</button>
+            <button style="margin-left:auto" class="success" onclick="location.reload()">Refresh Status</button>
+        </div>
+
+        <div id="result"></div>
+    </div>
+
+    <script>
+        function checkData() {
+            const dataList = document.getElementById('dataList');
+
+            const prefixes = ['shopflow_', 'techmart_'];
+            const patterns = [/mock/i, /seed/i, /fixture/i, /fake/i, /test/i];
+
+            const matchedKeys = [];
+            let totalItems = 0;
+
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                if (!key) continue;
+
+                const matchesPrefix = prefixes.some(p => key.startsWith(p));
+                const matchesPattern = patterns.some(rx => rx.test(key));
+
+                if (matchesPrefix || matchesPattern) {
+                    matchedKeys.push(key);
+                    try {
+                        const parsed = JSON.parse(localStorage.getItem(key) || 'null');
+                        const count = Array.isArray(parsed) ? parsed.length : (parsed ? 1 : 0);
+                        totalItems += count;
+                    } catch (e) {
+                        totalItems += 1;
+                    }
+                }
+            }
+
+            let html = '';
+            if (matchedKeys.length === 0) {
+                html = '<div class="data-item"><span>✅ No app mock/local data found - all clean!</span></div>';
+            } else {
+                html = `<div class="data-item"><strong>Total: ${totalItems} items across ${matchedKeys.length} matching keys</strong></div>`;
+                matchedKeys.forEach(key => {
+                    const raw = localStorage.getItem(key);
+                    let countLabel = 'exists';
+                    try {
+                        const parsed = JSON.parse(raw || 'null');
+                        countLabel = Array.isArray(parsed) ? `${parsed.length} items` : (parsed ? '1 item' : 'empty');
+                    } catch (e) {
+                        countLabel = 'exists';
+                    }
+                    html += `
+                        <div class="data-item">
+                            <span>${key}</span>
+                            <span class="count">${countLabel}</span>
+                        </div>
+                    `;
+                });
+            }
+
+            dataList.innerHTML = html;
+        }
+
+        function clearData() {
+            if (!confirm('Are you sure you want to clear detected app data from localStorage and sessionStorage? This cannot be undone.')) {
+                return;
+            }
+
+            const prefixes = ['shopflow_', 'techmart_'];
+            const patterns = [/mock/i, /seed/i, /fixture/i, /fake/i, /test/i];
+
+            const removedKeys = [];
+
+            // Remove matching keys from localStorage
+            const lsKeys = [];
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                if (key) lsKeys.push(key);
+            }
+
+            lsKeys.forEach(key => {
+                const matchesPrefix = prefixes.some(p => key.startsWith(p));
+                const matchesPattern = patterns.some(rx => rx.test(key));
+                if (matchesPrefix || matchesPattern) {
+                    localStorage.removeItem(key);
+                    removedKeys.push(key);
+                }
+            });
+
+            // Also clear sessionStorage for parity (same rules)
+            const ssKeys = [];
+            for (let i = 0; i < sessionStorage.length; i++) {
+                const key = sessionStorage.key(i);
+                if (key) ssKeys.push(key);
+            }
+
+            ssKeys.forEach(key => {
+                const matchesPrefix = prefixes.some(p => key.startsWith(p));
+                const matchesPattern = patterns.some(rx => rx.test(key));
+                if (matchesPrefix || matchesPattern) {
+                    sessionStorage.removeItem(key);
+                    removedKeys.push(key + ' (session)');
+                }
+            });
+
+            const result = document.getElementById('result');
+            result.className = 'success';
+            if (removedKeys.length === 0) {
+                result.innerHTML = `<strong>✅ Nothing to remove.</strong><br><small>No matching app/mock keys were found.</small>`;
+            } else {
+                const listHtml = removedKeys.map(k => `<div>${k}</div>`).join('');
+                result.innerHTML = `
+                    <strong>✅ Removed ${removedKeys.length} keys</strong><br>
+                    ${listHtml}
+                    <small>Refresh the page to see updated status.</small>
+                `;
+            }
+
+            setTimeout(() => {
+                checkData();
+            }, 500);
+        }
+
+        async function clearIndexedDB() {
+            if (!confirm('Delete all IndexedDB databases? This may remove app state.')) return;
+            const result = document.getElementById('result');
+            const removed = [];
+            if (!('indexedDB' in window)) {
+                result.className = 'success';
+                result.innerHTML = '<strong>⚠️ IndexedDB not supported in this browser.</strong>';
+                return;
+            }
+
+            try {
+                if (indexedDB.databases) {
+                    const dbs = await indexedDB.databases();
+                    for (const db of dbs) {
+                        if (!db.name) continue;
+                        await new Promise(resolve => {
+                            const req = indexedDB.deleteDatabase(db.name);
+                            req.onsuccess = () => { removed.push(db.name); resolve(null); };
+                            req.onerror = () => { resolve(null); };
+                            req.onblocked = () => { resolve(null); };
+                        });
+                    }
+                } else {
+                    // Older browsers: attempt common DB names used by the app
+                    const common = ['shopflow_db', 'techmart_db'];
+                    for (const name of common) {
+                        await new Promise(resolve => {
+                            const req = indexedDB.deleteDatabase(name);
+                            req.onsuccess = () => { removed.push(name); resolve(null); };
+                            req.onerror = () => { resolve(null); };
+                            req.onblocked = () => { resolve(null); };
+                        });
+                    }
+                }
+
+                result.className = 'success';
+                if (removed.length === 0) result.innerHTML = '<strong>✅ IndexedDB cleared (no known DB names found).</strong>';
+                else result.innerHTML = `<strong>✅ Deleted IndexedDB databases:</strong><br>${removed.map(n=>`<div>${n}</div>`).join('')}`;
+            } catch (e) {
+                result.className = 'success';
+                result.innerHTML = `<strong>⚠️ Failed to enumerate/delete IndexedDB.</strong><br><small>${e}</small>`;
+            }
+        }
+
+        async function clearCachesAndWorkers() {
+            if (!confirm('Delete service worker registrations and caches? This will unregister service workers and remove caches.')) return;
+            const result = document.getElementById('result');
+            const details = [];
+
+            // Clear caches
+            if ('caches' in window) {
+                try {
+                    const keys = await caches.keys();
+                    for (const k of keys) {
+                        await caches.delete(k);
+                        details.push(`cache:${k}`);
+                    }
+                } catch (e) {
+                    details.push('caches:error');
+                }
+            } else {
+                details.push('caches:unsupported');
+            }
+
+            // Unregister service workers
+            if ('serviceWorker' in navigator) {
+                try {
+                    const regs = await navigator.serviceWorker.getRegistrations();
+                    for (const r of regs) {
+                        await r.unregister();
+                        details.push('sw:unregistered');
+                    }
+                } catch (e) {
+                    details.push('sw:error');
+                }
+            } else {
+                details.push('sw:unsupported');
+            }
+
+            result.className = 'success';
+            result.innerHTML = `<strong>✅ Caches/ServiceWorkers cleared</strong><br>${details.map(d=>`<div>${d}</div>`).join('')}`;
+        }
+
+        async function clearEverything() {
+            if (!confirm('This will clear matching local/session storage keys, IndexedDB, caches and unregister service workers. Continue?')) return;
+            // Run in sequence
+            clearData();
+            await new Promise(r => setTimeout(r, 300));
+            await clearIndexedDB();
+            await new Promise(r => setTimeout(r, 300));
+            await clearCachesAndWorkers();
+        }
+
+        // Check data on load
+        checkData();
+    </script>
+</body>
+</html>
