@@ -35,7 +35,7 @@ export function ReviewProvider({ children }: { children: ReactNode }) {
       try {
         // Only load all reviews if user is admin
         if (user?.role === 'ADMIN' && token) {
-          const response = await fetch(`${apiUrl}/reviews`, {
+          const response = await fetch(`${apiUrl}/admin/reviews`, {
             headers: {
               'Authorization': `Bearer ${token}`,
             },

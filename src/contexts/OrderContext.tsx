@@ -57,7 +57,7 @@ export function OrderProvider({ children }: { children: ReactNode }) {
     const loadAllOrders = async () => {
       try {
         if (token && user?.role === 'ADMIN') {
-          const response = await fetch(`${apiUrl}/orders`, {
+          const response = await fetch(`${apiUrl}/admin/orders`, {
             headers: {
               'Authorization': `Bearer ${token}`,
             },
@@ -81,7 +81,7 @@ export function OrderProvider({ children }: { children: ReactNode }) {
   const loadDeliveries = useCallback(async () => {
     try {
       if (token) {
-        const response = await fetch(`${apiUrl}/deliveries`, {
+        const response = await fetch(`${apiUrl}/admin/deliveries`, {
           headers: {
             'Authorization': `Bearer ${token}`,
           },

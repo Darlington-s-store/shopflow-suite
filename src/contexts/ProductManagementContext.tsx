@@ -65,8 +65,8 @@ export function ProductManagementProvider({ children }: { children: ReactNode })
                 
                 const [productsRes, categoriesRes, brandsRes] = await Promise.all([
                     fetch(`${apiUrl}/products`),
-                    fetch(`${apiUrl}/products/categories`),
-                    fetch(`${apiUrl}/products/brands`)
+                    fetch(`${apiUrl}/admin/categories`),
+                    fetch(`${apiUrl}/admin/brands`)
                 ]);
 
                 if (productsRes.ok) {
@@ -478,7 +478,7 @@ export function ProductManagementProvider({ children }: { children: ReactNode })
     // Category Management
     const createCategory = useCallback(async (data: Omit<Category, 'id'>): Promise<{ success: boolean; categoryId?: string; error?: string }> => {
         try {
-            const response = await fetch(`${apiUrl}/products/categories`, {
+            const response = await fetch(`${apiUrl}/admin/categories`, {
                 method: 'POST',
                 credentials: 'include',
                 headers: {
@@ -520,7 +520,7 @@ export function ProductManagementProvider({ children }: { children: ReactNode })
 
     const updateCategory = useCallback(async (id: string, data: Partial<Category>): Promise<{ success: boolean; error?: string }> => {
         try {
-            const response = await fetch(`${apiUrl}/products/categories/${id}`, {
+            const response = await fetch(`${apiUrl}/admin/categories/${id}`, {
                 method: 'PUT',
                 credentials: 'include',
                 headers: {
@@ -562,7 +562,7 @@ export function ProductManagementProvider({ children }: { children: ReactNode })
 
     const deleteCategory = useCallback(async (id: string): Promise<{ success: boolean; error?: string }> => {
         try {
-            const response = await fetch(`${apiUrl}/products/categories/${id}`, {
+            const response = await fetch(`${apiUrl}/admin/categories/${id}`, {
                 method: 'DELETE',
                 credentials: 'include',
             });
@@ -584,7 +584,7 @@ export function ProductManagementProvider({ children }: { children: ReactNode })
     // Brand Management
     const createBrand = useCallback(async (data: Omit<Brand, 'id'>): Promise<{ success: boolean; brandId?: string; error?: string }> => {
         try {
-            const response = await fetch(`${apiUrl}/products/brands`, {
+            const response = await fetch(`${apiUrl}/admin/brands`, {
                 method: 'POST',
                 credentials: 'include',
                 headers: {
@@ -623,7 +623,7 @@ export function ProductManagementProvider({ children }: { children: ReactNode })
 
     const updateBrand = useCallback(async (id: string, data: Partial<Brand>): Promise<{ success: boolean; error?: string }> => {
         try {
-            const response = await fetch(`${apiUrl}/products/brands/${id}`, {
+            const response = await fetch(`${apiUrl}/admin/brands/${id}`, {
                 method: 'PUT',
                 credentials: 'include',
                 headers: {
@@ -662,7 +662,7 @@ export function ProductManagementProvider({ children }: { children: ReactNode })
 
     const deleteBrand = useCallback(async (id: string): Promise<{ success: boolean; error?: string }> => {
         try {
-            const response = await fetch(`${apiUrl}/products/brands/${id}`, {
+            const response = await fetch(`${apiUrl}/admin/brands/${id}`, {
                 method: 'DELETE',
                 credentials: 'include',
             });
